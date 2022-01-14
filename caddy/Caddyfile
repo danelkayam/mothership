@@ -1,0 +1,13 @@
+{
+  http_port 80
+
+  log {
+    level debug
+  }
+}
+
+http://*.mothership.home {
+
+  @blackhole { host blackhole.mothership.home }
+  reverse_proxy @blackhole blackhole:80
+}

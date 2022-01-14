@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  reverse-proxy:
+    image: caddy:2-alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/proxy/config:/config
+      - ./data/proxy/data:/data
+  
+  blackhole:
+    image: pihole/pihole:latest
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 67:67/udp
+    environment:
+      - TZ='Asia/Jrusalem'
+      - WEBPASSWORD='admin' # remove this!!
+      - VIRTUAL_HOST=blackhole.mothership.local
+      - PROXY_LOCATION=blackhole.mothership.local
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ./data/blackhole/pihole/:/etc/pihole
+      - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
