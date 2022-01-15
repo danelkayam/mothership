@@ -1,8 +1,13 @@
 version: '3.8'
 
 services:
+
+  # proxy server for routing all inner services
   reverse-proxy:
     image: caddy:2-alpine
+    depends_on:
+      - blackhole
+      - smart
     ports:
       - 80:80
       - 443:443
@@ -11,6 +16,7 @@ services:
       - ./data/proxy/config:/config
       - ./data/proxy/data:/data
   
+  # local dns for manage mothership.home domain and block ads
   blackhole:
     image: pihole/pihole:latest
     ports:
@@ -22,3 +28,12 @@ services:
     volumes:
       - ./data/blackhole/pihole/:/etc/pihole
       - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
+
+  # manages automation and control of all iot devices
+  smart:
+    image: homeassistant/home-assistant:stable
+    network_mode: host
+    env_file:
+      - ./secrets/smart.env
+    volumes:
+      - ./data/smart:/config

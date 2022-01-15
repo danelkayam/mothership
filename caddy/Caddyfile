@@ -7,7 +7,9 @@
 }
 
 http://*.mothership.home {
-
   @blackhole { host blackhole.mothership.home }
   reverse_proxy @blackhole blackhole:80
+
+  @smart { host smart.mothership.home }
+  reverse_proxy @smart 192.168.0.171:8123
 }
