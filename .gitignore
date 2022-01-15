@@ -2,4 +2,4 @@
 data/*
 # all keys
 .env*
-.secrets/*
+secrets/*

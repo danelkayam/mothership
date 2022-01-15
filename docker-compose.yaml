@@ -18,7 +18,7 @@ services:
       - 53:53/udp
       - 67:67/udp
     env_file:
-      - ./.secrets/blackhole.env
+      - ./secrets/blackhole.env
     volumes:
       - ./data/blackhole/pihole/:/etc/pihole
       - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
