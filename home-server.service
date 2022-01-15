@@ -1,0 +1,14 @@
+[Unit]
+Description=Runs all services in Docker compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/opt/home-server
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+TimeoutStartSec=0
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

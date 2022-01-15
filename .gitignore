@@ -1,1 +1,5 @@
+# temporarly data dir for all dockers
 data/*
+# all keys
+.env*
+.secrets/*
