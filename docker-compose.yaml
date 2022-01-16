@@ -37,3 +37,15 @@ services:
       - ./secrets/smart.env
     volumes:
       - ./data/smart:/config
+
+  # manages torrent downloads
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+    env_file:
+      - ./secrets/transmission.env
+    volumes:
+      - ./data/transmission:/config
+      - /media/data/downloads:/downloads
