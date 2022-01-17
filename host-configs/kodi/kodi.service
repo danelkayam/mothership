@@ -1,0 +1,13 @@
+[Unit]
+Description=Launch Kodi
+Conflicts=kodi.socket
+
+[Service]
+User=kodi
+Group=kodi
+Type=simple
+ExecStart=/usr/bin/kodi
+ExecStopPost=sudo /usr/bin/systemctl start --no-block kodi.socket
+
+[Install]
+WantedBy=multi-user.target
