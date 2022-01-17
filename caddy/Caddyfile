@@ -15,4 +15,7 @@ http://*.mothership.home {
 
   @transmission { host transmission.mothership.home }
   reverse_proxy @transmission transmission:9091
+
+  @kodi { host kodi.mothership.home }
+  reverse_proxy @kodi 192.168.0.171:4001
 }
