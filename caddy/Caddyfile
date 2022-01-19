@@ -12,19 +12,19 @@ http://*.mothership.home {
   reverse_proxy @blackhole blackhole:80
 
   @smart { host smart.mothership.home }
-  reverse_proxy @smart 192.168.0.171:8123
+  reverse_proxy @smart {env.HOST_IP}:8123
 
   @transmission { host transmission.mothership.home }
   reverse_proxy @transmission transmission:9091
 
   @kodi { host kodi.mothership.home }
-  reverse_proxy @kodi 192.168.0.171:4001
+  reverse_proxy @kodi {env.HOST_IP}:4001
 }
 
 ws://*.mothership.home { 
   @smart { host smart.mothership.home }
-  reverse_proxy @smart 192.168.0.171:8123
+  reverse_proxy @smart {env.HOST_IP}:8123
 
   @kodi { host kodi.mothership.home }
-  reverse_proxy @kodi 192.168.0.171:4002
+  reverse_proxy @kodi {env.HOST_IP}:4002
 }
