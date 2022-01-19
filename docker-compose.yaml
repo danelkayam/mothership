@@ -40,6 +40,17 @@ services:
     volumes:
       - ./data/smart:/config
 
+  mqtt:
+    build:
+      context: ./mqtt
+    ports:
+      - 1883:1883
+    env_file:
+      - ./secrets/mqtt.env
+    volumes:
+      - ./data/mqtt/data:/mosquitto/data
+      - ./data/mqtt/log:/mosquitto/log
+
   # manages torrent downloads
   transmission:
     image: lscr.io/linuxserver/transmission:latest
