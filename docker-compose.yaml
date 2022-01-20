@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   # proxy server for routing all inner services
   reverse-proxy:
     image: caddy:2-alpine
@@ -61,4 +60,28 @@ services:
       - ./secrets/transmission.env
     volumes:
       - ./data/transmission:/config
-      - /media/data/downloads:/downloads
+      - /media/data/downloads:/downloads:rw
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    env_file:
+      - ./secrets/radarr.env
+    volumes:
+      - ./data/radarr:/config
+      - /media/data/movies:/movies:rw
+      - /media/data/downloads:/downloads:rw
+  
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:develop
+    env_file:
+      - ./secrets/prowlarr.env
+    volumes:
+      - ./data/prowlarr:/config
+  
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    env_file:
+      - ./secrets/bazarr.env
+    volumes:
+      - ./data/bazarr/config:/config
+      - /media/data/movies:/movies:rw

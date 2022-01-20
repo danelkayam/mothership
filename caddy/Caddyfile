@@ -14,11 +14,20 @@ http://*.mothership.home {
   @smart { host smart.mothership.home }
   reverse_proxy @smart {env.HOST_IP}:8123
 
+  @kodi { host kodi.mothership.home }
+  reverse_proxy @kodi {env.HOST_IP}:4001
+
   @transmission { host transmission.mothership.home }
   reverse_proxy @transmission transmission:9091
 
-  @kodi { host kodi.mothership.home }
-  reverse_proxy @kodi {env.HOST_IP}:4001
+  @radarr { host radarr.mothership.home }
+  reverse_proxy @radarr radarr:7878
+
+  @prowlarr { host prowlarr.mothership.home }
+  reverse_proxy @prowlarr prowlarr:9696
+
+  @bazarr { host bazarr.mothership.home }
+  reverse_proxy @bazarr bazarr:6767
 }
 
 ws://*.mothership.home { 
