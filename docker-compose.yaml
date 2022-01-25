@@ -30,6 +30,14 @@ services:
       - ./data/blackhole/pihole/:/etc/pihole
       - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
 
+  # home page for all services
+  deck:
+    image: lscr.io/linuxserver/heimdall:latest
+    env_file:
+      - ./secrets/deck.env
+    volumes:
+      - ./data/deck:/config
+      
   # manages automation and control of all iot devices
   smart:
     image: homeassistant/home-assistant:stable

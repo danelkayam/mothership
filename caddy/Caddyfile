@@ -11,6 +11,9 @@ http://*.mothership.home {
   @blackhole { host blackhole.mothership.home }
   reverse_proxy @blackhole blackhole:80
 
+  @deck { host deck.mothership.home }
+  reverse_proxy @deck deck:80
+
   @smart { host smart.mothership.home }
   reverse_proxy @smart {env.HOST_IP}:8123
 
