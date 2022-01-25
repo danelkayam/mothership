@@ -37,7 +37,16 @@ services:
       - ./secrets/deck.env
     volumes:
       - ./data/deck:/config
-      
+  
+  # vscode for editing configurations
+  code:
+    image: lscr.io/linuxserver/code-server:latest
+    env_file:
+      - ./secrets/code.env
+    volumes:
+      - ./data/code:/config
+      - ./data:/config/workspace
+
   # manages automation and control of all iot devices
   smart:
     image: homeassistant/home-assistant:stable

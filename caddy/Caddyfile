@@ -14,6 +14,9 @@ http://*.mothership.home {
   @deck { host deck.mothership.home }
   reverse_proxy @deck deck:80
 
+  @code { host code.mothership.home }
+  reverse_proxy @code code:8443
+
   @smart { host smart.mothership.home }
   reverse_proxy @smart {env.HOST_IP}:8123
 
