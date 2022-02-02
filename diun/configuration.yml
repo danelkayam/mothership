@@ -1,0 +1,17 @@
+watch:
+  workers: 10
+  schedule: "0 */6 * * *"
+  firstCheckNotif: true
+  compareDigest: true
+
+notif:
+  mqtt:
+    scheme: mqtt
+    port: 1883
+    client: diun
+    qos: 0
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watchByDefault: true

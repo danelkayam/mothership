@@ -50,6 +50,8 @@ services:
   # manages automation and control of all iot devices
   smart:
     image: homeassistant/home-assistant:stable
+    depends_on:
+      - mqtt
     network_mode: host
     env_file:
       - ./secrets/smart.env
@@ -66,6 +68,27 @@ services:
     volumes:
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
+
+  # monitors docker images versions
+  diun:
+    image: crazymax/diun:latest
+    depends_on:
+      - mqtt
+    command: serve
+    env_file:
+      - ./secrets/diun.env
+    volumes:
+      - ./data/diun:/data
+      - ./diun/configuration.yml:/diun.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+
+############################################################
+#
+# Media Servers
+#
+############################################################
 
   # manages torrent downloads
   transmission:
