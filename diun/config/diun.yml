@@ -5,11 +5,8 @@ watch:
   compareDigest: true
 
 notif:
-  mqtt:
-    scheme: mqtt
-    port: 1883
-    client: diun
-    qos: 0
+  script:
+    cmd: '/notify.sh'
 
 providers:
   docker:

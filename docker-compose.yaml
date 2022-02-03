@@ -72,15 +72,14 @@ services:
   # monitors docker images versions
   diun:
     image: crazymax/diun:latest
-    depends_on:
-      - mqtt
-    command: serve
+    build: 
+      context: ./diun
     env_file:
       - ./secrets/diun.env
     volumes:
-      - ./data/diun:/data
-      - ./diun/configuration.yml:/diun.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "./data/diun:/data"
+      - "./diun/config/diun.yml:/diun.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 
 
