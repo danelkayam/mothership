@@ -23,6 +23,9 @@ http://*.mothership.home {
   @kodi { host kodi.mothership.home }
   reverse_proxy @kodi {env.HOST_IP}:4001
 
+  @files { host files.mothership.home }
+  reverse_proxy @files files:80
+
   @transmission { host transmission.mothership.home }
   reverse_proxy @transmission transmission:9091
 

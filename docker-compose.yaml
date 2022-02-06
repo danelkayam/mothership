@@ -89,6 +89,15 @@ services:
 #
 ############################################################
 
+  # media files explorar
+  files:
+    image: filebrowser/filebrowser:s6
+    env_file:
+      - ./secrets/files.env
+    volumes:
+      - ./data/files:/database
+      - /media/data:/srv:rw
+
   # manages torrent downloads
   transmission:
     image: lscr.io/linuxserver/transmission:latest
