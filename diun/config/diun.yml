@@ -1,7 +1,6 @@
 watch:
   workers: 10
   schedule: "0 */6 * * *"
-  firstCheckNotif: true
   compareDigest: true
 
 notif:
@@ -12,3 +11,7 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     watchByDefault: true
+  
+  dockerfile:
+    patterns:
+      - "**/Dockerfile*"
