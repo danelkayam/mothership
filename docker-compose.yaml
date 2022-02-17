@@ -69,6 +69,29 @@ services:
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
 
+  # monitors docker images versions
+  diun:
+    image: crazymax/diun:latest
+    depends_on:
+      - reverse-proxy
+      - blackhole
+      - deck
+      - code
+      - mqtt
+      - files
+      - transmission
+      - radarr
+      - prowlarr
+      - bazarr
+    build: 
+      context: ./diun
+    env_file:
+      - ./secrets/diun.env
+    volumes:
+      - "./data/diun:/data"
+      - "./diun/config/diun.yml:/diun.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
 
 ############################################################
 #
