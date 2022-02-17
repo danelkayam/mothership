@@ -20,6 +20,9 @@ http://*.mothership.home {
   @smart { host smart.mothership.home }
   reverse_proxy @smart {env.HOST_IP}:8123
 
+  @esphome { host esphome.mothership.home }
+  reverse_proxy @esphome {env.HOST_IP}:6052
+
   @kodi { host kodi.mothership.home }
   reverse_proxy @kodi {env.HOST_IP}:4001
 
