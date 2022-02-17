@@ -73,6 +73,7 @@ services:
   esphome:
     image: esphome/esphome
     network_mode: host
+    privileged: true
     volumes:
       - ./data/esphome:/config
 
