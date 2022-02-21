@@ -23,6 +23,9 @@ http://*.mothership.home {
   @esphome { host esphome.mothership.home }
   reverse_proxy @esphome {env.HOST_IP}:6052
 
+  @zigbee2mqtt { host zigbee2mqtt.mothership.home }
+  reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
+
   @kodi { host kodi.mothership.home }
   reverse_proxy @kodi {env.HOST_IP}:4001
 
@@ -45,6 +48,9 @@ http://*.mothership.home {
 ws://*.mothership.home { 
   @smart { host smart.mothership.home }
   reverse_proxy @smart {env.HOST_IP}:8123
+
+  @zigbee2mqtt { host zigbee2mqtt.mothership.home }
+  reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
 
   @kodi { host kodi.mothership.home }
   reverse_proxy @kodi {env.HOST_IP}:4002

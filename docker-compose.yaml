@@ -69,6 +69,20 @@ services:
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
 
+  # bridges zigbee devices to mqtt
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    env_file:
+      - ./secrets/zigbee2mqtt.env
+    volumes:
+      - ./data/zigbee2mqtt:/app/data
+      - /run/udev:/run/udev:ro
+    devices:
+      # Make sure this matched your adapter location
+      - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_429e93520ed9eb11939a0815b9da5f8b-if00-port0:/dev/ttyACM0
+    group_add:
+      - dialout
+
   # manages all esp devices
   esphome:
     image: esphome/esphome
