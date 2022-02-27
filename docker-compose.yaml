@@ -101,6 +101,7 @@ services:
       - code
       - mqtt
       - esphome
+      - diunstore
       - files
       - transmission
       - radarr
@@ -115,6 +116,12 @@ services:
       - "./diun/config/diun.yml:/diun.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
+  diunstore:
+    image: barvazware/diunstore:latest
+    env_file:
+      - ./secrets/diunstore.env
+    volumes:
+      - "./data/diunstore:/data"
 
 ############################################################
 #

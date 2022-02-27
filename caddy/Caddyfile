@@ -26,6 +26,9 @@ http://*.mothership.home {
   @zigbee2mqtt { host zigbee2mqtt.mothership.home }
   reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
 
+  @diunstore { host diunstore.mothership.home }
+  reverse_proxy @diunstore diunstore:1337
+
   @kodi { host kodi.mothership.home }
   reverse_proxy @kodi {env.HOST_IP}:4001
 
