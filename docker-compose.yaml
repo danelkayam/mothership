@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # proxy server for routing all inner services
   reverse-proxy:
-    image: caddy:2-alpine
+    image: caddy:2.4.5-alpine
     depends_on:
       - blackhole
       - smart
