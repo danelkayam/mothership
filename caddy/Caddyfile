@@ -1,10 +1,6 @@
 {
   http_port 80
   auto_https off
-
-  log {
-    level debug
-  }
 }
 
 http://*.mothership.home {
