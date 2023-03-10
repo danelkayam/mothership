@@ -16,6 +16,7 @@ services:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/proxy/config:/config
       - ./data/proxy/data:/data
+    restart: always
   
   # local dns for manage mothership.home domain and block ads
   blackhole:
@@ -29,6 +30,7 @@ services:
     volumes:
       - ./data/blackhole/pihole/:/etc/pihole
       - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
+    restart: always
 
   # home page for all services
   deck:
@@ -37,6 +39,7 @@ services:
       - ./secrets/deck.env
     volumes:
       - ./data/deck:/config
+    restart: always
   
   # vscode for editing configurations
   code:
@@ -46,6 +49,7 @@ services:
     volumes:
       - ./data/code:/config
       - ./data:/config/workspace
+    restart: always
 
   # manages automation and control of all iot devices
   smart:
@@ -57,6 +61,7 @@ services:
       - ./secrets/smart.env
     volumes:
       - ./data/smart:/config
+    restart: always
 
   mqtt:
     build:
@@ -68,6 +73,7 @@ services:
     volumes:
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
+    restart: always
 
   # bridges zigbee devices to mqtt
   zigbee2mqtt:
@@ -82,6 +88,7 @@ services:
       - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_429e93520ed9eb11939a0815b9da5f8b-if00-port0:/dev/ttyACM0
     group_add:
       - dialout
+    restart: always
 
   # manages all esp devices
   esphome:
@@ -90,6 +97,7 @@ services:
     privileged: true
     volumes:
       - ./data/esphome:/config
+    restart: always
 
   # monitors docker images versions
   diun:
@@ -115,6 +123,7 @@ services:
       - "./data/diun:/data"
       - "./diun/config/diun.yml:/diun.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always
 
   diunstore:
     image: barvazware/diunstore:latest
@@ -122,6 +131,7 @@ services:
       - ./secrets/diunstore.env
     volumes:
       - "./data/diunstore:/data"
+    restart: always
 
 ############################################################
 #
@@ -137,6 +147,7 @@ services:
     volumes:
       - ./data/files:/database
       - /media/data:/srv:rw
+    restart: always
 
   # manages torrent downloads
   transmission:
@@ -149,6 +160,7 @@ services:
     volumes:
       - ./data/transmission:/config
       - /media/data/downloads:/downloads:rw
+    restart: always
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -158,6 +170,7 @@ services:
       - ./data/radarr:/config
       - /media/data/movies:/movies:rw
       - /media/data/downloads:/downloads:rw
+    restart: always
   
   prowlarr:
     image: ghcr.io/linuxserver/prowlarr:develop
@@ -165,6 +178,7 @@ services:
       - ./secrets/prowlarr.env
     volumes:
       - ./data/prowlarr:/config
+    restart: always
   
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -173,3 +187,4 @@ services:
     volumes:
       - ./data/bazarr/config:/config
       - /media/data/movies:/movies:rw
+    restart: always
