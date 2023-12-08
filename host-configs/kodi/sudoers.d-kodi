@@ -1,5 +1,0 @@
-# Contains configurations to allow kodi user / group to control its states via systemctl:
-
-Cmnd_Alias KODI_CMDS = /usr/bin/systemctl start --no-block kodi.socket
-
-kodi ALL=(ALL) NOPASSWD: KODI_CMDS
