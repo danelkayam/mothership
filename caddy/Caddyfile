@@ -43,11 +43,6 @@ http://*.mothership.home {
   }
   reverse_proxy @diunstore diunstore:1337
 
-  @kodi {
-    host kodi.mothership.home
-  }
-  reverse_proxy @kodi {env.HOST_IP}:4001
-
   @files {
     host files.mothership.home
   }
@@ -85,8 +80,4 @@ ws://*.mothership.home {
   }
   reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
 
-  @kodi {
-    host kodi.mothership.home
-  }
-  reverse_proxy @kodi {env.HOST_IP}:4002
 }
