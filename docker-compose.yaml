@@ -1,9 +1,8 @@
-version: '3.8'
 
 services:
   # proxy server for routing all inner services
   reverse-proxy:
-    image: caddy:2.5.2-alpine
+    image: caddy:2.8-alpine
     depends_on:
       - blackhole
       - smart
@@ -17,7 +16,7 @@ services:
       - ./data/proxy/config:/config
       - ./data/proxy/data:/data
     restart: always
-  
+
   # local dns for manage mothership.home domain and block ads
   blackhole:
     image: pihole/pihole:latest
@@ -40,16 +39,12 @@ services:
     volumes:
       - ./data/deck:/config
     restart: always
-  
-  # vscode for editing configurations
-  code:
-    image: lscr.io/linuxserver/code-server:latest
-    env_file:
-      - ./secrets/code.env
-    volumes:
-      - ./data/code:/config
-      - ./data:/config/workspace
-    restart: always
+
+  ############################################################
+  #
+  # Smart Home
+  #
+  ############################################################
 
   # manages automation and control of all iot devices
   smart:
@@ -68,6 +63,7 @@ services:
       context: ./mqtt
     ports:
       - 1883:1883
+      - 9001:9001
     env_file:
       - ./secrets/mqtt.env
     volumes:
@@ -99,22 +95,11 @@ services:
       - ./data/esphome:/config
     restart: always
 
-
-############################################################
-#
-# Media Servers
-#
-############################################################
-
-  # media files explorar
-  files:
-    image: filebrowser/filebrowser:s6
-    env_file:
-      - ./secrets/files.env
-    volumes:
-      - ./data/files:/database
-      - /media/data:/srv:rw
-    restart: always
+  ############################################################
+  #
+  # Media Servers
+  #
+  ############################################################
 
   # manages torrent downloads
   transmission:
@@ -138,7 +123,17 @@ services:
       - /media/data/movies:/movies:rw
       - /media/data/downloads:/downloads:rw
     restart: always
-  
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    env_file:
+      - ./secrets/sonarr.env
+    volumes:
+      - ./data/sonarr:/config
+      - /media/data/shows:/tv:rw
+      - /media/data/downloads:/downloads:rw
+    restart: always
+
   prowlarr:
     image: ghcr.io/linuxserver/prowlarr:develop
     env_file:
@@ -146,7 +141,7 @@ services:
     volumes:
       - ./data/prowlarr:/config
     restart: always
-  
+
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     env_file:
@@ -155,3 +150,38 @@ services:
       - ./data/bazarr/config:/config
       - /media/data/movies:/movies:rw
     restart: always
+
+  ############################################################
+  #
+  # Miscellaneous
+  #
+  ############################################################
+
+  # vscode for editing configurations
+  code:
+    image: lscr.io/linuxserver/code-server:latest
+    env_file:
+      - ./secrets/code.env
+    volumes:
+      - ./data/code:/config
+      - ./data:/config/workspace
+    restart: always
+
+  files:
+    image: filebrowser/filebrowser:s6
+    env_file:
+      - ./secrets/files.env
+    volumes:
+      - ./data/files:/database
+      - /media/data:/srv:rw
+    restart: always
+
+  # view dockers logs
+  dozzle:
+    image: amir20/dozzle:latest
+    ports:
+      - 3002:8080
+    env_file:
+      - ./secrets/dozzle.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

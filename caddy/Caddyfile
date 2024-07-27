@@ -18,10 +18,11 @@ http://*.mothership.home {
   }
   reverse_proxy @deck deck:80
 
-  @code {
-    host code.mothership.home
-  }
-  reverse_proxy @code code:8443
+  ############################################################
+  #
+  # Smart Home
+  #
+  ############################################################
 
   @smart {
     host smart.mothership.home
@@ -38,15 +39,11 @@ http://*.mothership.home {
   }
   reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
 
-  @diunstore {
-    host diunstore.mothership.home
-  }
-  reverse_proxy @diunstore diunstore:1337
-
-  @files {
-    host files.mothership.home
-  }
-  reverse_proxy @files files:80
+  ############################################################
+  #
+  # Media Servers
+  #
+  ############################################################
 
   @transmission {
     host transmission.mothership.home
@@ -58,6 +55,11 @@ http://*.mothership.home {
   }
   reverse_proxy @radarr radarr:7878
 
+  @sonarr {
+    host sonarr.mothership.home
+  }
+  reverse_proxy @sonarr sonarr:8989
+
   @prowlarr {
     host prowlarr.mothership.home
   }
@@ -67,17 +69,25 @@ http://*.mothership.home {
     host bazarr.mothership.home
   }
   reverse_proxy @bazarr bazarr:6767
-}
 
-ws://*.mothership.home { 
-  @smart {
-    host smart.mothership.home
+  ############################################################
+  #
+  # Miscellaneous
+  #
+  ############################################################
+
+  @code {
+    host code.mothership.home
   }
-  reverse_proxy @smart {env.HOST_IP}:8123
+  reverse_proxy @code code:8443
 
-  @zigbee2mqtt {
-    host zigbee2mqtt.mothership.home
+  @files {
+    host files.mothership.home
   }
-  reverse_proxy @zigbee2mqtt zigbee2mqtt:8080
+  reverse_proxy @files files:80
 
+  @dozzle {
+    host dozzle.mothership.home
+  }
+  reverse_proxy @dozzle {env.HOST_IP}:3002
 }
