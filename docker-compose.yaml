@@ -15,7 +15,7 @@ services:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/proxy/config:/config
       - ./data/proxy/data:/data
-    restart: always
+    restart: unless-stopped
 
   # local dns for manage mothership.home domain and block ads
   blackhole:
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./data/blackhole/pihole/:/etc/pihole
       - ./data/blackhole/dnsmasq/:/etc/dnsmasq.d
-    restart: always
+    restart: unless-stopped
 
   # home page for all services
   deck:
@@ -38,7 +38,7 @@ services:
       - ./secrets/deck.env
     volumes:
       - ./data/deck:/config
-    restart: always
+    restart: unless-stopped
 
   ############################################################
   #
@@ -52,11 +52,14 @@ services:
     depends_on:
       - mqtt
     network_mode: host
+    privileged: true
     env_file:
       - ./secrets/smart.env
     volumes:
       - ./data/smart:/config
-    restart: always
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
 
   mqtt:
     build:
@@ -69,7 +72,7 @@ services:
     volumes:
       - ./data/mqtt/data:/mosquitto/data
       - ./data/mqtt/log:/mosquitto/log
-    restart: always
+    restart: unless-stopped
 
   # bridges zigbee devices to mqtt
   zigbee2mqtt:
@@ -84,7 +87,7 @@ services:
       - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_429e93520ed9eb11939a0815b9da5f8b-if00-port0:/dev/ttyACM0
     group_add:
       - dialout
-    restart: always
+    restart: unless-stopped
 
   # manages all esp devices
   esphome:
@@ -93,7 +96,7 @@ services:
     privileged: true
     volumes:
       - ./data/esphome:/config
-    restart: always
+    restart: unless-stopped
 
   ############################################################
   #
@@ -112,7 +115,7 @@ services:
     volumes:
       - ./data/transmission:/config
       - /media/data/downloads:/downloads:rw
-    restart: always
+    restart: unless-stopped
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -122,7 +125,7 @@ services:
       - ./data/radarr:/config
       - /media/data/movies:/movies:rw
       - /media/data/downloads:/downloads:rw
-    restart: always
+    restart: unless-stopped
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -132,7 +135,7 @@ services:
       - ./data/sonarr:/config
       - /media/data/shows:/tv:rw
       - /media/data/downloads:/downloads:rw
-    restart: always
+    restart: unless-stopped
 
   prowlarr:
     image: ghcr.io/linuxserver/prowlarr:develop
@@ -140,7 +143,7 @@ services:
       - ./secrets/prowlarr.env
     volumes:
       - ./data/prowlarr:/config
-    restart: always
+    restart: unless-stopped
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -149,7 +152,7 @@ services:
     volumes:
       - ./data/bazarr/config:/config
       - /media/data/movies:/movies:rw
-    restart: always
+    restart: unless-stopped
 
   ############################################################
   #
@@ -165,7 +168,7 @@ services:
     volumes:
       - ./data/code:/config
       - ./data:/config/workspace
-    restart: always
+    restart: unless-stopped
 
   files:
     image: filebrowser/filebrowser:s6
@@ -174,7 +177,7 @@ services:
     volumes:
       - ./data/files:/database
       - /media/data:/srv:rw
-    restart: always
+    restart: unless-stopped
 
   # view dockers logs
   dozzle:
@@ -185,3 +188,4 @@ services:
       - ./secrets/dozzle.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
