@@ -9,6 +9,7 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 443:443/udp
     env_file:
       - ./secrets/reverse-proxy.env
     volumes:
@@ -25,6 +26,7 @@ services:
       - 53:53/udp
       - 67:67/udp
     env_file:
+      - ./secrets/common.env
       - ./secrets/blackhole.env
     volumes:
       - ./data/blackhole/pihole/:/etc/pihole
@@ -35,7 +37,7 @@ services:
   deck:
     image: lscr.io/linuxserver/heimdall:latest
     env_file:
-      - ./secrets/deck.env
+      - ./secrets/common.env
     volumes:
       - ./data/deck:/config
     restart: unless-stopped
@@ -54,6 +56,7 @@ services:
     network_mode: host
     privileged: true
     env_file:
+      - ./secrets/common.env
       - ./secrets/smart.env
     volumes:
       - ./data/smart:/config
@@ -78,7 +81,7 @@ services:
   zigbee2mqtt:
     image: koenkk/zigbee2mqtt:latest
     env_file:
-      - ./secrets/zigbee2mqtt.env
+      - ./secrets/common.env
     volumes:
       - ./data/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
@@ -96,6 +99,7 @@ services:
     privileged: true
     volumes:
       - ./data/esphome:/config
+      - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
 
   ############################################################
@@ -111,6 +115,7 @@ services:
       - 51413:51413
       - 51413:51413/udp
     env_file:
+      - ./secrets/common.env
       - ./secrets/transmission.env
     volumes:
       - ./data/transmission:/config
@@ -120,7 +125,7 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     env_file:
-      - ./secrets/radarr.env
+      - ./secrets/common.env
     volumes:
       - ./data/radarr:/config
       - /media/data/movies:/movies:rw
@@ -130,7 +135,7 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     env_file:
-      - ./secrets/sonarr.env
+      - ./secrets/common.env
     volumes:
       - ./data/sonarr:/config
       - /media/data/shows:/tv:rw
@@ -140,7 +145,7 @@ services:
   prowlarr:
     image: ghcr.io/linuxserver/prowlarr:develop
     env_file:
-      - ./secrets/prowlarr.env
+      - ./secrets/common.env
     volumes:
       - ./data/prowlarr:/config
     restart: unless-stopped
@@ -148,10 +153,11 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     env_file:
-      - ./secrets/bazarr.env
+      - ./secrets/common.env
     volumes:
       - ./data/bazarr/config:/config
       - /media/data/movies:/movies:rw
+      - /media/data/shows:/tv:rw
     restart: unless-stopped
 
   ############################################################
@@ -173,7 +179,7 @@ services:
   files:
     image: filebrowser/filebrowser:s6
     env_file:
-      - ./secrets/files.env
+      - ./secrets/common.env
     volumes:
       - ./data/files:/database
       - /media/data:/srv:rw
