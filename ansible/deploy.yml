@@ -1,0 +1,27 @@
+---
+- hosts: mothership
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Sync files to the server
+      synchronize:
+        src: "{{ playbook_dir }}/../mothership/"
+        dest: "{{ service_dir }}"
+        delete: yes
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.gitignore"
+          - "--exclude=secrets"
+          - "--exclude=secrets-templates"
+          - "--exclude=data"
+
+    - name: Ensure secrets directory exists on the server
+      file:
+        path: "{{ service_dir }}/secrets"
+        state: directory
+
+    - name: Restart Docker services
+      shell: |
+        cd "{{ service_dir }}"
+        docker-compose down
+        docker-compose up -d --build

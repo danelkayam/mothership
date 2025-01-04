@@ -1,0 +1,5 @@
+---
+
+username: mothership
+# service_dir: /home/mothership/mothership # for testing only
+service_dir: /opt/mothership
