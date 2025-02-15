@@ -90,4 +90,9 @@ http://*.mothership.home {
     host dozzle.mothership.home
   }
   reverse_proxy @dozzle {env.HOST_IP}:3002
+
+  @beszel {
+    host beszel.mothership.home
+  }
+  reverse_proxy @beszel beszel:8090
 }

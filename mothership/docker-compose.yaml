@@ -79,7 +79,7 @@ services:
 
   # bridges zigbee devices to mqtt
   zigbee2mqtt:
-    image: koenkk/zigbee2mqtt:latest
+    image: koenkk/zigbee2mqtt:1.42.0
     env_file:
       - ./secrets/common.env
     volumes:
@@ -194,4 +194,22 @@ services:
       - ./secrets/dozzle.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  # system monitor
+  beszel:
+    image: henrygd/beszel:latest
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./data/beszel:/beszel_data
+    restart: unless-stopped
+
+  beszel-agent:
+    image: "henrygd/beszel-agent"
+    network_mode: host
+    env_file:
+      - ./secrets/beszel-agent.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
