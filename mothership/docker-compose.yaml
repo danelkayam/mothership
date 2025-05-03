@@ -170,6 +170,7 @@ services:
   code:
     image: lscr.io/linuxserver/code-server:latest
     env_file:
+      - ./secrets/common.env
       - ./secrets/code.env
     volumes:
       - ./data/code:/config
