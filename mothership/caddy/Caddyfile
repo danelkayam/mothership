@@ -89,7 +89,7 @@ http://*.mothership.home {
   @dozzle {
     host dozzle.mothership.home
   }
-  reverse_proxy @dozzle {env.HOST_IP}:3002
+  reverse_proxy @dozzle dozzle:8080
 
   @beszel {
     host beszel.mothership.home

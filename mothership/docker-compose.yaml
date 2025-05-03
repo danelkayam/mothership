@@ -2,7 +2,7 @@
 services:
   # proxy server for routing all inner services
   reverse-proxy:
-    image: caddy:2.8-alpine
+    image: caddy:2.10-alpine
     depends_on:
       - blackhole
       - smart
@@ -11,6 +11,7 @@ services:
       - 443:443
       - 443:443/udp
     env_file:
+      - ./secrets/common.env
       - ./secrets/reverse-proxy.env
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -71,6 +72,7 @@ services:
       - 1883:1883
       - 9001:9001
     env_file:
+      - ./secrets/common.env
       - ./secrets/mqtt.env
     volumes:
       - ./data/mqtt/data:/mosquitto/data
@@ -97,6 +99,8 @@ services:
     image: esphome/esphome
     network_mode: host
     privileged: true
+    env_file:
+      - ./secrets/common.env
     volumes:
       - ./data/esphome:/config
       - /etc/localtime:/etc/localtime:ro
@@ -189,9 +193,8 @@ services:
   # view dockers logs
   dozzle:
     image: amir20/dozzle:latest
-    ports:
-      - 3002:8080
     env_file:
+      - ./secrets/common.env
       - ./secrets/dozzle.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -202,6 +205,8 @@ services:
     image: henrygd/beszel:latest
     extra_hosts:
       - host.docker.internal:host-gateway
+    env_file:
+      - ./secrets/common.env
     volumes:
       - ./data/beszel:/beszel_data
     restart: unless-stopped
@@ -210,6 +215,7 @@ services:
     image: "henrygd/beszel-agent"
     network_mode: host
     env_file:
+      - ./secrets/common.env
       - ./secrets/beszel-agent.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
