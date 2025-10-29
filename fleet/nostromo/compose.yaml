@@ -1,0 +1,5 @@
+name: nostromo
+
+include:
+  - ./common.yaml
+

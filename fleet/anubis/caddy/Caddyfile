@@ -1,0 +1,16 @@
+import common.caddyfile
+
+http://smart.{$HOST} {
+  import common_site
+  reverse_proxy host.docker.internal:8123
+}
+
+http://esphome.{$HOST} {
+  import common_site
+  reverse_proxy host.docker.internal:6052
+}
+
+http://z2m.{$HOST} {
+  import common_site
+  reverse_proxy http://z2m:8080
+}

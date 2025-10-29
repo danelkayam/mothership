@@ -1,0 +1,44 @@
+services:
+  reverse-proxy:
+    image: caddy:2.10-alpine
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./envs/common.env
+    environment:
+      - HOST={{HOST}}
+    volumes:
+      - ./caddy/common.caddyfile:/etc/caddy/common.caddyfile:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    restart: unless-stopped
+
+  beszel-agent:
+    image: "henrygd/beszel-agent"
+    network_mode: host
+    env_file:
+      - ./envs/common.env
+      - ./envs/beszel-agent.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - beszel_agent_data:/var/lib/beszel-agent
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  beszel_agent_data:

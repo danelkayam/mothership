@@ -1,0 +1,58 @@
+pageInfo:
+  title: Mothership
+
+appConfig:
+  theme: colorful
+  layout: auto
+  iconSize: medium
+  hideComponents:
+    hideSearch: true
+    hideSettings: true
+    hideFooter: true
+    hideNav: true
+  # statusCheck: true
+  # statusCheckInterval: 20
+  # statusCheckAllowInsecure: true
+
+sections:
+  - name: General
+    icon: fas fa-rocket
+    items:
+    - title: Dashboard
+      icon: hl-dashy
+      url: http://dashboard.rocinante.mothership.home
+    - title: Bookmarks
+      icon: hl-karakeep
+      url: http://bookmarks.rocinante.mothership.home
+    - title: Documents
+      icon: hl-trilium
+      url: http://documents.rocinante.mothership.home
+    - title: Automations
+      icon: hl-n8n
+      url: http://n8n.donnager.mothership.home
+
+  - name: Monitoring
+    icon: fas fa-chart-line
+    items:
+    - title: Dozzle
+      icon: hl-dozzle
+      url: http://dozzle.romulus.mothership.home
+    - title: Beszel
+      icon: hl-beszel
+      url: http://beszel.romulus.mothership.home
+    - title: Status
+      icon: hl-uptime-kuma
+      url: http://status.romulus.mothership.home
+
+  - name: Smart Home
+    icon: fas fa-house-signal
+    items:
+    - title: Home Assistant
+      icon: hl-home-assistant
+      url: http://smart.anubis.mothership.home
+    - title: ESPHome
+      icon: hl-esphome
+      url: http://esphome.anubis.mothership.home
+    - title: Zigbee2MQTT
+      icon: hl-zigbee2mqtt
+      url: http://z2m.anubis.mothership.home

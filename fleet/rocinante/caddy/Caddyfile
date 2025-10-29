@@ -1,0 +1,16 @@
+import common.caddyfile
+
+http://dashboard.{$HOST} {
+  import common_site
+  reverse_proxy http://dashboard:8080
+}
+
+http://bookmarks.{$HOST} {
+  import common_site
+  reverse_proxy http://bookmarks:3000
+}
+
+http://documents.{$HOST} {
+  import common_site
+  reverse_proxy http://documents:8080
+}

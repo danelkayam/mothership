@@ -1,0 +1,16 @@
+import common.caddyfile
+
+http://status.{$HOST} {
+  import common_site
+  reverse_proxy http://status:3001
+}
+
+http://dozzle.{$HOST} {
+  import common_site
+  reverse_proxy http://dozzle:8080
+}
+
+http://beszel.{$HOST} {
+  import common_site
+  reverse_proxy http://beszel:8090
+}

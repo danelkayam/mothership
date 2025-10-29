@@ -1,0 +1,16 @@
+{
+  http_port 80
+  auto_https off
+
+  log {
+    level info
+  }
+}
+
+(common_site) {
+  log {
+    format json
+  }
+
+  encode zstd gzip
+}

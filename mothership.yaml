@@ -1,0 +1,11 @@
+m8pVersion: 0.0.1 
+
+fleet:
+  domain: mothership.home
+  user: mothership
+  ships:
+    - name: anubis
+    - name: donnager
+    - name: nostromo
+    - name: rocinante
+    - name: romulus

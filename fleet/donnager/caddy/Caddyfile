@@ -1,0 +1,6 @@
+import common.caddyfile
+
+http://n8n.{$HOST} {
+  import common_site
+  reverse_proxy http://n8n:5678
+}
