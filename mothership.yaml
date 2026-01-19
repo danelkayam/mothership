@@ -4,7 +4,6 @@ fleet:
   domain: mothership.home
   user: mothership
   ships:
-    - name: anubis
     - name: donnager
     - name: nostromo
     - name: rocinante

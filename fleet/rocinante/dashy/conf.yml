@@ -27,9 +27,6 @@ sections:
     - title: Documents
       icon: hl-trilium
       url: http://documents.rocinante.mothership.home
-    - title: Automations
-      icon: hl-n8n
-      url: http://n8n.donnager.mothership.home
 
   - name: Monitoring
     icon: fas fa-chart-line
@@ -49,10 +46,10 @@ sections:
     items:
     - title: Home Assistant
       icon: hl-home-assistant
-      url: http://smart.anubis.mothership.home
+      url: http://smart.donnager.mothership.home
     - title: ESPHome
       icon: hl-esphome
-      url: http://esphome.anubis.mothership.home
+      url: http://esphome.donnager.mothership.home
     - title: Zigbee2MQTT
       icon: hl-zigbee2mqtt
-      url: http://z2m.anubis.mothership.home
+      url: http://z2m.donnager.mothership.home

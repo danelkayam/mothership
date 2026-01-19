@@ -1,6 +1,16 @@
 import common.caddyfile
 
-http://n8n.{$HOST} {
+http://smart.{$HOST} {
   import common_site
-  reverse_proxy http://n8n:5678
+  reverse_proxy host.docker.internal:8123
+}
+
+http://esphome.{$HOST} {
+  import common_site
+  reverse_proxy host.docker.internal:6052
+}
+
+http://z2m.{$HOST} {
+  import common_site
+  reverse_proxy http://z2m:8080
 }
