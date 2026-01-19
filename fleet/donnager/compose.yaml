@@ -27,6 +27,20 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
 
+  mqtt:
+    build:
+      context: ./mqtt
+    ports:
+      - 1883:1883
+      - 9001:9001
+    env_file:
+      - ./envs/common.env
+      - ./envs/mqtt.env
+    volumes:
+      - mqtt_data:/mosquitto/data
+      - mqtt_log:/mosquitto/log
+    restart: unless-stopped
+  
   z2m:
     image: koenkk/zigbee2mqtt:latest
     env_file:
@@ -34,11 +48,15 @@ services:
     volumes:
       - z2m_data:/app/data
       - /run/udev:/run/udev:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
     group_add:
       - dialout
     restart: unless-stopped
 
 volumes:
   homeassistant_data:
-  z2m_data:
   esphome_data:
+  mqtt_data:
+  mqtt_log:
+  z2m_data:
