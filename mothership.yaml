@@ -1,10 +1,22 @@
 m8pVersion: 0.0.1 
 
 fleet:
-  domain: mothership.home
-  user: mothership
+  carriers:
+    mothership:
+      domain: mothership.home
+      user: mothership
+    serenity:
+      domain: home # the domain is serenity.home since its a single service
+      user: serenity
+
   ships:
-    - name: donnager
-    - name: nostromo
-    - name: rocinante
-    - name: romulus
+    donnager:
+      carrier: mothership
+    nostromo:
+      carrier: mothership
+    rocinante:
+      carrier: mothership
+    romulus:
+      carrier: mothership
+    serenity:
+      carrier: serenity
