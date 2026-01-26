@@ -3,3 +3,71 @@ name: nostromo
 include:
   - ./common.yaml
 
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+    env_file:
+      - ./envs/common.env
+      - ./envs/transmission.env
+    environment:
+      - UMASK=${UMASK:-002}
+    volumes:
+      - transmission_config:/config
+      - /mnt/media/downloads:/downloads:rw
+    restart: unless-stopped
+
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:latest
+    env_file:
+      - ./envs/common.env
+    environment:
+      - UMASK=${UMASK:-002}
+    volumes:
+      - prowlarr_config:/config
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    env_file:
+      - ./envs/common.env
+    environment:
+      - UMASK=${UMASK:-002}
+    volumes:
+      - radarr_config:/config
+      - /mnt/media/movies:/movies:rw
+      - /mnt/media/downloads:/downloads:rw
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    env_file:
+      - ./envs/common.env
+    environment:
+      - UMASK=${UMASK:-002}
+    volumes:
+      - sonarr_config:/config
+      - /mnt/media/shows:/tv:rw
+      - /mnt/media/downloads:/downloads:rw
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    env_file:
+      - ./envs/common.env
+    environment:
+      - UMASK=${UMASK:-002}
+    volumes:
+      - bazarr_config:/config
+      - /mnt/media/movies:/movies:rw
+      - /mnt/media/shows:/tv:rw
+    restart: unless-stopped
+
+volumes:
+  transmission_config:
+  prowlarr_config:
+  radarr_config:
+  sonarr_config:
+  bazarr_config:

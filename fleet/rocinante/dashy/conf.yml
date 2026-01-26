@@ -18,6 +18,9 @@ sections:
   - name: General
     icon: fas fa-rocket
     items:
+    - title: AdGuard Home Main DNS
+      icon: hl-adguardhome
+      url: http://blackhole.serenity.home
     - title: Dashboard
       icon: hl-dashy
       url: http://dashboard.rocinante.mothership.home
@@ -53,3 +56,22 @@ sections:
     - title: Zigbee2MQTT
       icon: hl-zigbee2mqtt
       url: http://z2m.donnager.mothership.home
+
+  - name: Media
+    icon: fas fa-tv
+    items:
+    - title: Transmission
+      icon: hl-transmission
+      url: http://transmission.nostromo.mothership.home
+    - title: Radarr
+      icon: hl-radarr
+      url: http://radarr.nostromo.mothership.home
+    - title: Sonarr
+      icon: hl-sonarr
+      url: http://sonarr.nostromo.mothership.home
+    - title: Bazarr
+      icon: hl-bazarr
+      url: http://bazarr.nostromo.mothership.home
+    - title: Prowlarr
+      icon: hl-prowlarr
+      url: http://prowlarr.nostromo.mothership.home

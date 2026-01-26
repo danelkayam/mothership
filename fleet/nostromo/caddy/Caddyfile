@@ -1,1 +1,26 @@
 import common.caddyfile
+
+http://transmission.{$HOST} {
+  import common_site
+  reverse_proxy http://transmission:9091
+}
+
+http://prowlarr.{$HOST} {
+  import common_site
+  reverse_proxy http://prowlarr:9696
+}
+
+http://radarr.{$HOST} {
+  import common_site
+  reverse_proxy http://radarr:7878
+}
+
+http://sonarr.{$HOST} {
+  import common_site
+  reverse_proxy http://sonarr:8989
+}
+
+http://bazarr.{$HOST} {
+  import common_site
+  reverse_proxy http://bazarr:6767
+}
