@@ -16,6 +16,8 @@ services:
       - /run/dbus:/run/dbus:ro
       - /mnt/media:/media:rw
     restart: unless-stopped
+    depends_on:
+      - mqtt
 
   esphome:
     image: ghcr.io/esphome/esphome:stable
@@ -27,6 +29,8 @@ services:
       - esphome_data:/config
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
+    depends_on:
+      - smart
 
   mqtt:
     build:
@@ -54,6 +58,8 @@ services:
     group_add:
       - dialout
     restart: unless-stopped
+    depends_on:
+      - mqtt
 
 volumes:
   homeassistant_data:
