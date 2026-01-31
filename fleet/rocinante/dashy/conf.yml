@@ -21,6 +21,9 @@ sections:
     - title: AdGuard Home Main DNS
       icon: hl-adguardhome
       url: http://blackhole.serenity.home
+    - title: AdGuard Home Secondary DNS
+      icon: hl-adguardhome
+      url: http://blackhole.betty.home
     - title: Dashboard
       icon: hl-dashy
       url: http://dashboard.rocinante.mothership.home

@@ -1,0 +1,6 @@
+import common.caddyfile
+
+http://blackhole.{$HOST} {
+  import common_site
+  reverse_proxy http://blackhole:80
+}

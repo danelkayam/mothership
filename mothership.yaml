@@ -6,8 +6,11 @@ fleet:
       domain: mothership.home
       user: mothership
     serenity:
-      domain: home # the domain is serenity.home since its a single service
+      domain: home
       user: serenity
+    betty:
+      domain: home
+      user: betty
 
   ships:
     donnager:
@@ -20,3 +23,5 @@ fleet:
       carrier: mothership
     serenity:
       carrier: serenity
+    betty:
+      carrier: betty
