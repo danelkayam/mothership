@@ -39,6 +39,8 @@ services:
     env_file:
       - ./envs/common.env
       - ./envs/mqtt.env
+    environment:
+      - EMQX_NODE__NAME=emqx@donnager
     volumes:
       - mqtt_data:/opt/emqx/data
       - mqtt_log:/opt/emqx/log
