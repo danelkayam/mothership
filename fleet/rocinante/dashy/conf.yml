@@ -56,6 +56,9 @@ sections:
     - title: ESPHome
       icon: hl-esphome
       url: http://esphome.donnager.mothership.home
+    - title: MQTT
+      icon: hl-emqx
+      url: http://mqtt.donnager.mothership.home
     - title: Zigbee2MQTT
       icon: hl-zigbee2mqtt
       url: http://z2m.donnager.mothership.home
