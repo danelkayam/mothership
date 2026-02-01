@@ -10,6 +10,11 @@ http://esphome.{$HOST} {
   reverse_proxy host.docker.internal:6052
 }
 
+http://mqtt.{$HOST} {
+  import common_site
+  reverse_proxy http://mqtt:18083
+}
+
 http://z2m.{$HOST} {
   import common_site
   reverse_proxy http://z2m:8080

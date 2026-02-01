@@ -33,17 +33,15 @@ services:
       - smart
 
   mqtt:
-    build:
-      context: ./mqtt
+    image: emqx/emqx:latest
     ports:
       - 1883:1883
-      - 9001:9001
     env_file:
       - ./envs/common.env
       - ./envs/mqtt.env
     volumes:
-      - mqtt_data:/mosquitto/data
-      - mqtt_log:/mosquitto/log
+      - mqtt_data:/opt/emqx/data
+      - mqtt_log:/opt/emqx/log
     restart: unless-stopped
   
   z2m:
