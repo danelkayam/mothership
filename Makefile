@@ -124,5 +124,5 @@ prune-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' mothership.ya
 prune-%: HOST = $(SHIP).$(DOMAIN)
 prune-%:
 	@echo "🪓 Pruning $(SHIP) on $(USER)@$(HOST)"
-	ssh $(USER)@$(HOST) -t docker system prune --all --volumes -f
+	ssh $(USER)@$(HOST) -t docker system prune -af
 	@echo "🪓 Pruning $(SHIP) on $(USER)@$(HOST) ... DONE"
