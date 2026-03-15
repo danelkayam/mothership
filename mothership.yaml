@@ -21,6 +21,8 @@ fleet:
       carrier: mothership
     romulus:
       carrier: mothership
+    tycho:
+      carrier: mothership
     serenity:
       carrier: serenity
     betty:

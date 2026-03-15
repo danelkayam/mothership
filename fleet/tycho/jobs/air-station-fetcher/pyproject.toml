@@ -1,0 +1,12 @@
+[project]
+name = "air-station-quality"
+version = "1.0.0"
+description = "Fetch air quality data from local air quality station and publish it to MQTT"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32.0",
+    "paho-mqtt>=2.1.0",
+]
+
+[tool.uv]
+package = false

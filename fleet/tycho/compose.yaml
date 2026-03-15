@@ -1,0 +1,29 @@
+name: tycho
+
+include:
+  - ./common.yaml
+
+services:
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: unless-stopped
+    command: daemon --docker
+    depends_on:
+      - job-air-station-fetcher
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  job-air-station-fetcher:
+    build:
+      context: jobs/air-station-fetcher
+      dockerfile: Dockerfile
+    env_file:
+      - ./envs/common.env
+      - ./envs/job_air_station_fetcher.env
+    restart: unless-stopped
+    stop_grace_period: 30s
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.air-station-fetcher.schedule: "@every 30m"
+      ofelia.job-exec.air-station-fetcher.command: "/app/.venv/bin/python /app/air_station_fetcher.py"
+      ofelia.job-exec.air-station-fetcher.no-overlap: "true"
