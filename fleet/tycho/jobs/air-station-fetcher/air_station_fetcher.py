@@ -6,6 +6,9 @@ import os
 import re
 import sys
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from urllib import response
+
 
 import paho.mqtt.publish as mqtt_publish
 import requests
@@ -30,6 +33,7 @@ logging.basicConfig(
     stream=sys.stdout,
 )
 logger = logging.getLogger("air_station_fetcher")
+timezone = ZoneInfo("Asia/Jerusalem")
 
 SESSION = requests.Session()
 
@@ -126,9 +130,17 @@ def prime_session_from_html(html: str) -> str:
 
 
 def build_average_params() -> dict:
-    now = datetime.now()
-    start = now.replace(hour=0, minute=5, second=0, microsecond=0)
-    end = (start + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    now = datetime.now(timezone)
+    
+    # floor to nearest 5-minute mark
+    aligned = now - timedelta(
+        minutes=now.minute % 5,
+        seconds=now.second,
+        microseconds=now.microsecond,
+    )
+
+    end = aligned
+    start = end - timedelta(minutes=5)
 
     return {
         "filterChannels": FILTER_CHANNELS,
@@ -147,6 +159,8 @@ def build_average_params() -> dict:
 
 
 def fetch_station_data(form_verification_token: str, api_token: str) -> dict:
+    params=build_average_params()
+    
     headers = {
         **API_HEADERS_BASE,
         "Authorization": f"ApiToken {api_token}",
@@ -156,10 +170,21 @@ def fetch_station_data(form_verification_token: str, api_token: str) -> dict:
     response = SESSION.get(
         f"{API_BASE_URL}/v1/envista/stations/{STATION_ID}/Average",
         headers=headers,
-        params=build_average_params(),
+        params=params,
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
+    logger.info("recieving response from station, status=%s", response.status_code)
+    
     response.raise_for_status()
+    
+    if response.status_code == 204:
+        logger.warning(
+            "No data returned for station_id=%s, params=%s",
+            STATION_ID,
+            params,
+        )
+        return None
+    
     return response.json()
 
 
@@ -173,6 +198,7 @@ def normalize(data: dict) -> dict:
     result = {
         "station_id": STATION_ID,
         "timestamp": latest.get("datetime") or latest.get("time"),
+        "available": True,
     }
 
     channels = latest.get("channels") or latest.get("measurements") or []
@@ -190,6 +216,13 @@ def normalize(data: dict) -> dict:
 
     return result
 
+def normalize_unavailable() -> dict:
+    return {
+        "station_id": STATION_ID,
+        "timestamp": datetime.now(timezone).isoformat(timespec="seconds"),
+        "available": False,
+        "reason": "no_data_available",
+    }
 
 def publish_to_mqtt(payload: dict) -> None:
     auth = None
@@ -222,9 +255,15 @@ def main() -> int:
 
         logger.info("Fetching station data...")
         raw = fetch_station_data(form_verification_token, api_token)
-        payload = normalize(raw)
-        logger.info("station data: %s", payload)
-        logger.info("Fetching station data... DONE")
+        
+        if raw is not None:
+            payload = normalize(raw)
+            logger.info("station data: %s", payload)
+            logger.info("Fetching station data... DONE")
+            
+        else:
+            payload = normalize_unavailable()
+            logger.info("Fetching station data... UNAVAILABLE")
 
         logger.info("Publishing to MQTT topic=%s", MQTT_TOPIC)
         publish_to_mqtt(payload)

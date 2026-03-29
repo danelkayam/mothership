@@ -2,3 +2,8 @@
 *.env
 logs/*
 build/
+
+uv.lock
+.venv/
+__pycache__/
+*.pyc
