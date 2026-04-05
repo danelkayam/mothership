@@ -1,0 +1,18 @@
+[Unit]
+Description=Nostromo Docker Compose Stack
+Requires=docker.service mnt-media.automount
+After=docker.service network-online.target mnt-media.automount
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/mothership/nostromo
+ExecStartPre=/usr/bin/bash -c 'until /usr/bin/ls /mnt/media >/dev/null 2>&1; do sleep 2; done'
+ExecStartPre=/usr/bin/mountpoint -q /mnt/media
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+RemainAfterExit=yes
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
