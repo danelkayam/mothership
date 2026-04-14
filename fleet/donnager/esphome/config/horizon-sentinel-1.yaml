@@ -1,0 +1,49 @@
+esphome:
+  name: horizon-sentinel-1
+  friendly_name: Horizon sentinel 1
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Horizon-Sentinel-1"
+    password: !secret ap_password
+
+captive_portal:
+
+bluetooth_proxy:
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 30s
+
+  - platform: uptime
+    name: "Uptime"
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+text_sensor:
+  - platform: version
+    name: "Version"

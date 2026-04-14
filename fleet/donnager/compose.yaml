@@ -25,7 +25,8 @@ services:
     env_file:
       - ./envs/common.env
     volumes:
-      - esphome_data:/config
+      - ./esphome/config:/config
+      - esphome_build:/config/.esphome
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     depends_on:
@@ -58,7 +59,7 @@ services:
 
 volumes:
   homeassistant_data:
-  esphome_data:
+  esphome_build:
   mqtt_data:
   mqtt_log:
   z2m_data:
