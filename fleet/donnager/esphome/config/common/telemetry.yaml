@@ -1,0 +1,18 @@
+logger:
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    id: wifi_signal_strength
+    update_interval: 30s
+
+  - platform: uptime
+    name: "Uptime"
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+text_sensor:
+  - platform: version
+    name: "Version"
