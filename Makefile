@@ -45,8 +45,8 @@ build-%:
 
 	@echo "🏗️ Building $(SHIP) ..."
 	@rm -rf $(BUILD_DIR)/$(SHIP) && mkdir -p $(BUILD_DIR)/$(SHIP)
-	@cp -R $(COMMON_DIR)/* $(BUILD_DIR)/$(SHIP)/
-	@cp -R $(FLEET_DIR)/$(SHIP)/* $(BUILD_DIR)/$(SHIP)/
+	@cp -R $(COMMON_DIR)/. $(BUILD_DIR)/$(SHIP)/
+	@cp -R $(FLEET_DIR)/$(SHIP)/. $(BUILD_DIR)/$(SHIP)/
 	@sed -i 's/{{HOST}}/$(HOST)/g' $(BUILD_DIR)/$(SHIP)/common.yaml
 	@echo "🏗️ Building $(SHIP) ... DONE"
 
@@ -65,12 +65,18 @@ sync-%: build-%
 	$(validate_ship_context)
 
 	@echo "🛰️ Syncing $(SHIP) to $(USER)@$(HOST)"
+	@if [ ! -f "$(BUILD_DIR)/$(SHIP)/.syncignore" ]; then \
+		touch "$(BUILD_DIR)/$(SHIP)/.syncignore"; \
+	fi
+
 	ssh $(USER)@$(HOST) -t mkdir -p $(SHIP)
 	rsync -avz --delete \
 		--exclude='.git/' \
 		--exclude='.gitignore' \
 		--exclude='.gitkeep' \
+		--exclude='.syncignore' \
 		--exclude='data' \
+		--exclude-from="$(BUILD_DIR)/$(SHIP)/.syncignore" \
 		$(BUILD_DIR)/$(SHIP)/ $(USER)@$(HOST):$(SHIP)/
 	@echo "🛰️ Syncing $(SHIP) to $(USER)@$(HOST) ... DONE"
 
