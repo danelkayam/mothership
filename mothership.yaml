@@ -1,29 +1,24 @@
-m8pVersion: 0.0.1 
+version: 1
 
-fleet:
-  carriers:
-    mothership:
-      domain: mothership.home
-      user: mothership
-    serenity:
-      domain: home
-      user: serenity
-    betty:
-      domain: home
-      user: betty
-
-  ships:
-    donnager:
-      carrier: mothership
-    nostromo:
-      carrier: mothership
-    rocinante:
-      carrier: mothership
-    romulus:
-      carrier: mothership
-    tycho:
-      carrier: mothership
-    serenity:
-      carrier: serenity
-    betty:
-      carrier: betty
+ships:
+  donnager:
+    host: donnager.mothership.home
+    user: mothership
+  nostromo:
+    host: nostromo.mothership.home
+    user: mothership
+  rocinante:
+    host: rocinante.mothership.home
+    user: mothership
+  romulus:
+    host: romulus.mothership.home
+    user: mothership
+  tycho:
+    host: tycho.mothership.home
+    user: mothership
+  serenity:
+    host: serenity.home
+    user: serenity
+  betty:
+    host: betty.home
+    user: betty

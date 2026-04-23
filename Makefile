@@ -1,6 +1,5 @@
 CONFIG_FILE := mothership.yaml
-CARRIERS ?= $(shell yq -r '.fleet.carriers | keys | .[]' $(CONFIG_FILE))
-SHIPS ?= $(shell yq -r '.fleet.ships | keys | .[]' $(CONFIG_FILE))
+SHIPS ?= $(shell yq -r '.ships | keys | .[]' $(CONFIG_FILE))
 
 BUILD_DIR := $(CURDIR)/build
 COMMON_DIR := $(CURDIR)/common
@@ -21,25 +20,19 @@ define validate_ship_context
 		echo "⚠️ Unknown ship: $(SHIP)"; \
 		exit 2; \
 	fi
-	@if [ -z "$(filter $(CARRIER),$(CARRIERS))" ]; then \
-		echo "⚠️ Unknown carrier: $(CARRIER)"; \
-		exit 2; \
-	fi
-	@if [ -z "$(DOMAIN)" ]; then \
-		echo "⚠️ No domain defined for carrier: $(CARRIER)"; \
+	@if [ -z "$(HOST)" ]; then \
+		echo "⚠️ No host defined for ship: $(SHIP)"; \
 		exit 2; \
 	fi
 	@if [ -z "$(USER)" ]; then \
-		echo "⚠️ No user defined for carrier: $(CARRIER)"; \
+		echo "⚠️ No user defined for ship: $(SHIP)"; \
 		exit 2; \
 	fi
 endef
 
 build-%: SHIP = $*
-build-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-build-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-build-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-build-%: HOST = $(SHIP).$(DOMAIN)
+build-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+build-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 build-%:
 	$(validate_ship_context)
 
@@ -57,10 +50,8 @@ clean-%:
 	@echo "🧹 Cleaning $(SHIP) ... DONE"
 
 sync-%: SHIP = $*
-sync-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-sync-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-sync-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-sync-%: HOST = $(SHIP).$(DOMAIN)
+sync-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+sync-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 sync-%: build-%
 	$(validate_ship_context)
 
@@ -81,10 +72,8 @@ sync-%: build-%
 	@echo "🛰️ Syncing $(SHIP) to $(USER)@$(HOST) ... DONE"
 
 launch-%: SHIP = $*
-launch-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-launch-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-launch-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-launch-%: HOST = $(SHIP).$(DOMAIN)
+launch-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+launch-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 launch-%:
 	$(validate_ship_context)
 
@@ -94,10 +83,8 @@ launch-%:
 	@echo "🚀 Launching $(SHIP) on $(USER)@$(HOST) ... DONE"
 
 deploy-%: SHIP = $*
-deploy-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-deploy-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-deploy-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-deploy-%: HOST = $(SHIP).$(DOMAIN)
+deploy-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+deploy-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 deploy-%: sync-% launch-%
 	$(validate_ship_context)
 
@@ -105,10 +92,8 @@ deploy-%: sync-% launch-%
 	@echo "🛸 Deploying $(SHIP) to $(USER)@$(HOST) ... DONE"
 
 update-%: SHIP = $*
-update-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-update-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-update-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-update-%: HOST = $(SHIP).$(DOMAIN)
+update-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+update-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 update-%:
 	$(validate_ship_context)
 
@@ -120,10 +105,8 @@ update-%:
 	@echo "♻️ Updating $(SHIP) on $(USER)@$(HOST) ... DONE"
 
 prune-%: SHIP = $*
-prune-%: CARRIER = $(shell yq -r '.fleet.ships["$(SHIP)"].carrier' $(CONFIG_FILE))
-prune-%: DOMAIN = $(shell yq -r '.fleet.carriers["$(CARRIER)"].domain' $(CONFIG_FILE))
-prune-%: USER = $(shell yq -r '.fleet.carriers["$(CARRIER)"].user' $(CONFIG_FILE))
-prune-%: HOST = $(SHIP).$(DOMAIN)
+prune-%: HOST = $(shell yq -r '.ships["$(SHIP)"].host' $(CONFIG_FILE))
+prune-%: USER = $(shell yq -r '.ships["$(SHIP)"].user' $(CONFIG_FILE))
 prune-%:
 	$(validate_ship_context)
 
