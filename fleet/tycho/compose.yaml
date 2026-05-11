@@ -24,6 +24,6 @@ services:
     stop_grace_period: 30s
     labels:
       ofelia.enabled: "true"
-      ofelia.job-exec.air-station-fetcher.schedule: "@every 30m"
+      ofelia.job-exec.air-station-fetcher.schedule: "@every 15m"
       ofelia.job-exec.air-station-fetcher.command: "/app/.venv/bin/python /app/air_station_fetcher.py"
       ofelia.job-exec.air-station-fetcher.no-overlap: "true"
