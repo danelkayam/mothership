@@ -19,3 +19,8 @@ http://z2m.{$HOST} {
   import common_site
   reverse_proxy http://z2m:8080
 }
+
+http://code.{$HOST} {
+  import common_site
+  reverse_proxy http://code-server:8443
+}

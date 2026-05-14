@@ -57,9 +57,23 @@ services:
     depends_on:
       - mqtt
 
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    env_file:
+      - ./envs/common.env
+      - ./envs/code.env
+    environment:
+    - PUID=0
+    - PGID=0
+    volumes:
+      - code_server_data:/config
+      - homeassistant_data:/workspace/home-assistant
+    restart: unless-stopped
+
 volumes:
   homeassistant_data:
   esphome_build:
   mqtt_data:
   mqtt_log:
   z2m_data:
+  code_server_data:

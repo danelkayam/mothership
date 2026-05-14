@@ -62,6 +62,9 @@ sections:
     - title: Zigbee2MQTT
       icon: hl-zigbee2mqtt
       url: http://z2m.donnager.mothership.home
+    - title: Code
+      icon: hl-code-server
+      url: http://code.donnager.mothership.home
 
   - name: Media
     icon: fas fa-tv
