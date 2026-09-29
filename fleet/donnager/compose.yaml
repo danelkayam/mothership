@@ -34,18 +34,23 @@ services:
 
   mqtt:
     image: emqx/emqx:latest
+    hostname: donnager.mothership.home
     ports:
       - 1883:1883
     env_file:
       - ./envs/common.env
       - ./envs/mqtt.env
     environment:
-      - EMQX_NODE__NAME=emqx@donnager
+      - EMQX_NODE__NAME=emqx@donnager.mothership.home
+    networks:
+      default:
+        aliases:
+          - donnager.mothership.home
     volumes:
       - mqtt_data:/opt/emqx/data
       - mqtt_log:/opt/emqx/log
     restart: unless-stopped
-  
+
   z2m:
     image: koenkk/zigbee2mqtt:latest
     env_file:
@@ -63,8 +68,8 @@ services:
       - ./envs/common.env
       - ./envs/code.env
     environment:
-    - PUID=0
-    - PGID=0
+      - PUID=0
+      - PGID=0
     volumes:
       - code_server_data:/config
       - homeassistant_data:/workspace/home-assistant
