@@ -75,6 +75,20 @@ services:
       - homeassistant_data:/workspace/home-assistant
     restart: unless-stopped
 
+  tessera:
+    image: ghcr.io/maxgramser/homeassistant_espscreen:latest
+    network_mode: host
+    init: true
+    env_file:
+      - ./envs/common.env
+      - ./envs/tessera.env
+    volumes:
+      - tessera_config:/config
+      - tessera_data:/data
+    restart: unless-stopped
+    depends_on:
+      - smart
+
 volumes:
   homeassistant_data:
   esphome_build:
@@ -82,3 +96,5 @@ volumes:
   mqtt_log:
   z2m_data:
   code_server_data:
+  tessera_config:
+  tessera_data:
