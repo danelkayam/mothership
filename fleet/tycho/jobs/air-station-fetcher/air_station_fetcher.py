@@ -1,17 +1,18 @@
+
 #!/usr/bin/env python3
 
 import json
 import logging
+import math
 import os
 import re
 import sys
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from urllib import response
-
 
 import paho.mqtt.publish as mqtt_publish
 import requests
+
 
 BASE_URL = "https://air.sviva.gov.il"
 API_BASE_URL = "https://air-papi.sviva.gov.il"
@@ -25,7 +26,12 @@ MQTT_TOPIC = os.getenv("MQTT_TOPIC", "").strip()
 MQTT_USERNAME = os.getenv("MQTT_USERNAME", "").strip()
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "").strip()
 
-REQUEST_TIMEOUT_SECONDS = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "30"))
+REQUEST_TIMEOUT_SECONDS = int(
+    os.getenv("REQUEST_TIMEOUT_SECONDS", "30")
+)
+LOOKBACK_MINUTES = int(os.getenv("LOOKBACK_MINUTES", "60"))
+
+TIMEZONE = ZoneInfo("Asia/Jerusalem")
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -33,7 +39,6 @@ logging.basicConfig(
     stream=sys.stdout,
 )
 logger = logging.getLogger("air_station_fetcher")
-timezone = ZoneInfo("Asia/Jerusalem")
 
 SESSION = requests.Session()
 
@@ -52,14 +57,14 @@ HTML_HEADERS = {
         "text/html,application/xhtml+xml,application/xml;q=0.9,"
         "image/avif,image/webp,image/apng,*/*;q=0.8"
     ),
-    "Referer": "https://air.sviva.gov.il/",
+    "Referer": f"{BASE_URL}/",
 }
 
 API_HEADERS_BASE = {
     **BROWSER_HEADERS,
     "Accept": "application/json, text/plain, */*",
-    "Origin": "https://air.sviva.gov.il",
-    "Referer": "https://air.sviva.gov.il/",
+    "Origin": BASE_URL,
+    "Referer": f"{BASE_URL}/",
     "X-Requested-With": "XMLHttpRequest",
 }
 
@@ -67,8 +72,12 @@ API_HEADERS_BASE = {
 def validate_config() -> None:
     if not MQTT_HOST:
         raise RuntimeError("MQTT_HOST is required")
+
     if not MQTT_TOPIC:
         raise RuntimeError("MQTT_TOPIC is required")
+
+    if LOOKBACK_MINUTES <= 0:
+        raise RuntimeError("LOOKBACK_MINUTES must be positive")
 
 
 def fetch_homepage_html() -> str:
@@ -82,7 +91,11 @@ def fetch_homepage_html() -> str:
 
 
 def extract_cookie_token(html: str, cookie_name: str) -> str:
-    pattern = rf'document\.cookie\s*=\s*"{re.escape(cookie_name)}=([^";]+)'
+    pattern = (
+        rf'document\.cookie\s*=\s*"'
+        rf'{re.escape(cookie_name)}=([^";]+)'
+    )
+
     matches = re.findall(pattern, html)
 
     for value in matches:
@@ -90,7 +103,9 @@ def extract_cookie_token(html: str, cookie_name: str) -> str:
         if value:
             return value
 
-    raise RuntimeError(f"Could not extract non-empty cookie token: {cookie_name}")
+    raise RuntimeError(
+        f"Could not extract non-empty cookie token: {cookie_name}"
+    )
 
 
 def extract_api_token(html: str) -> str:
@@ -103,44 +118,50 @@ def extract_api_token(html: str) -> str:
 
     for pattern in patterns:
         match = re.search(pattern, html)
+
         if match:
             token = match.group(1).strip()
             if token:
                 return token
 
-    raise RuntimeError("Could not extract embedded ApiToken from homepage")
+    raise RuntimeError(
+        "Could not extract embedded ApiToken from homepage"
+    )
 
 
 def prime_session_from_html(html: str) -> str:
-    request_verification_token = extract_cookie_token(html, "__RequestVerificationToken")
-    form_verification_token = extract_cookie_token(html, "__FormVerificationToken")
+    request_token = extract_cookie_token(
+        html, "__RequestVerificationToken"
+    )
+    form_token = extract_cookie_token(
+        html, "__FormVerificationToken"
+    )
 
     SESSION.cookies.set(
         "__RequestVerificationToken",
-        request_verification_token,
+        request_token,
         domain="air.sviva.gov.il",
     )
     SESSION.cookies.set(
         "__FormVerificationToken",
-        form_verification_token,
+        form_token,
         domain="air.sviva.gov.il",
     )
 
-    return form_verification_token
+    return form_token
 
 
 def build_average_params() -> dict:
-    now = datetime.now(timezone)
-    
-    # floor to nearest 5-minute mark
-    aligned = now - timedelta(
+    now = datetime.now(TIMEZONE)
+
+    # Align to the nearest previous five-minute interval.
+    end = now - timedelta(
         minutes=now.minute % 5,
         seconds=now.second,
         microseconds=now.microsecond,
     )
 
-    end = aligned
-    start = end - timedelta(minutes=5)
+    start = end - timedelta(minutes=LOOKBACK_MINUTES)
 
     return {
         "filterChannels": FILTER_CHANNELS,
@@ -158,14 +179,24 @@ def build_average_params() -> dict:
     }
 
 
-def fetch_station_data(form_verification_token: str, api_token: str) -> dict:
-    params=build_average_params()
-    
+def fetch_station_data(
+    form_verification_token: str,
+    api_token: str,
+) -> dict | None:
+    params = build_average_params()
+
     headers = {
         **API_HEADERS_BASE,
         "Authorization": f"ApiToken {api_token}",
         "x-RequestVerificationToken": form_verification_token,
     }
+
+    logger.info(
+        "Requesting station %s measurements from %s to %s",
+        STATION_ID,
+        params["from"],
+        params["to"],
+    )
 
     response = SESSION.get(
         f"{API_BASE_URL}/v1/envista/stations/{STATION_ID}/Average",
@@ -173,59 +204,133 @@ def fetch_station_data(form_verification_token: str, api_token: str) -> dict:
         params=params,
         timeout=REQUEST_TIMEOUT_SECONDS,
     )
-    logger.info("recieving response from station, status=%s", response.status_code)
-    
+
+    logger.info(
+        "Station response status=%s",
+        response.status_code,
+    )
+
     response.raise_for_status()
-    
+
     if response.status_code == 204:
         logger.warning(
-            "No data returned for station_id=%s, params=%s",
+            "Station %s returned no measurements (HTTP 204)",
             STATION_ID,
-            params,
         )
         return None
-    
+
     return response.json()
 
 
-def normalize(data: dict) -> dict:
+def normalize(data: dict) -> dict | None:
     rows = data.get("data") or []
-    if not rows:
-        raise RuntimeError("No data rows returned from API")
 
-    latest = rows[-1]
+    if not rows:
+        logger.warning("API returned no measurement rows")
+        return None
+
+    # Sort by timestamp instead of assuming API row order.
+    rows = sorted(
+        rows,
+        key=lambda row: row.get("datetime") or row.get("time") or "",
+        reverse=True,
+    )
 
     result = {
         "station_id": STATION_ID,
-        "timestamp": latest.get("datetime") or latest.get("time"),
         "available": True,
     }
 
-    channels = latest.get("channels") or latest.get("measurements") or []
-    for channel in channels:
-        name = channel.get("name") or channel.get("parameterName")
-        if not name:
-            continue
+    seen = set()
+    latest_timestamp = None
 
-        result[name] = {
-            "value": channel.get("value"),
-            "valid": channel.get("valid"),
-            "status": channel.get("status"),
-            "units": channel.get("units"),
-        }
+    for row in rows:
+        timestamp = row.get("datetime") or row.get("time")
+
+        channels = (
+            row.get("channels")
+            or row.get("measurements")
+            or []
+        )
+
+        for channel in channels:
+            name = (
+                channel.get("name")
+                or channel.get("parameterName")
+            )
+
+            value = channel.get("value")
+
+            if not name or name in seen:
+                continue
+
+            # Only accept valid numeric measurements.
+            if channel.get("valid") is not True:
+                continue
+
+            if isinstance(value, bool):
+                continue
+
+            if not isinstance(value, (int, float)):
+                continue
+
+            if not math.isfinite(value) or value < 0:
+                continue
+
+            seen.add(name)
+
+            result[name] = {
+                "value": value,
+                "valid": True,
+                "status": channel.get("status"),
+                "units": channel.get("units"),
+            }
+
+            if timestamp and (
+                latest_timestamp is None
+                or timestamp > latest_timestamp
+            ):
+                latest_timestamp = timestamp
+
+    if not seen:
+        logger.warning(
+            "No valid channel measurements found in %s rows",
+            len(rows),
+        )
+        return None
+
+    result["timestamp"] = latest_timestamp
+
+    if latest_timestamp:
+        measurement_time = datetime.fromisoformat(
+            latest_timestamp.replace("Z", "+00:00")
+        )
+        if measurement_time.tzinfo is None:
+            measurement_time = measurement_time.replace(
+                tzinfo=TIMEZONE
+            )
+
+        age = datetime.now(TIMEZONE) - measurement_time
+        age_minutes = age.total_seconds() / 60
+
+        logger.info(
+            "Latest measurement timestamp=%s, age=%.1f minutes",
+            latest_timestamp,
+            age_minutes,
+        )
+
+    logger.info(
+        "Normalized %s valid channels from %s rows",
+        len(seen),
+        len(rows),
+    )
 
     return result
 
-def normalize_unavailable() -> dict:
-    return {
-        "station_id": STATION_ID,
-        "timestamp": datetime.now(timezone).isoformat(timespec="seconds"),
-        "available": False,
-        "reason": "no_data_available",
-    }
 
 def publish_to_mqtt(payload: dict) -> None:
     auth = None
+
     if MQTT_USERNAME:
         auth = {
             "username": MQTT_USERNAME,
@@ -244,33 +349,42 @@ def publish_to_mqtt(payload: dict) -> None:
 
 def main() -> int:
     logger.info("Fetching air station data...")
+
     try:
         validate_config()
 
         logger.info("Fetching tokens...")
         html = fetch_homepage_html()
-        form_verification_token = prime_session_from_html(html)
+        form_token = prime_session_from_html(html)
         api_token = extract_api_token(html)
         logger.info("Fetching tokens... DONE")
 
         logger.info("Fetching station data...")
-        raw = fetch_station_data(form_verification_token, api_token)
-        
-        if raw is not None:
-            payload = normalize(raw)
-            logger.info("station data: %s", payload)
-            logger.info("Fetching station data... DONE")
-            
-        else:
-            payload = normalize_unavailable()
-            logger.info("Fetching station data... UNAVAILABLE")
+        raw = fetch_station_data(form_token, api_token)
 
-        logger.info("Publishing to MQTT topic=%s", MQTT_TOPIC)
+        payload = normalize(raw) if raw is not None else None
+
+        if payload is None:
+            # Keep the last retained MQTT measurement.
+            # Do not overwrite numeric HA entities with missing values.
+            logger.warning(
+                "No valid measurements; preserving retained MQTT data"
+            )
+            return 0
+
+        logger.info("Station data: %s", payload)
+
+        logger.info(
+            "Publishing to MQTT topic=%s",
+            MQTT_TOPIC,
+        )
         publish_to_mqtt(payload)
-        logger.info("Publishing to MQTT... DONE")
 
+        logger.info("Publishing to MQTT... DONE")
         logger.info("Fetching air station data... DONE")
+
         return 0
+
     except Exception:
         logger.exception("Fetching air station data... FAILED")
         return 1
